@@ -1,21 +1,34 @@
 from ultralytics import YOLO
-from os.path import basename,join,exists
+from os.path import (
+    basename,
+    exists,
+    join
+)
 from os import makedirs
 from shutil import rmtree
 from glob import glob
-import cv2
+from cv2 import (
+    bitwise_and,
+    imwrite,
+    imread, 
+    INTER_AREA,
+    fillPoly,
+    getRotationMatrix2D,
+    resize,
+    warpAffine,
+)
+
 import numpy as np
 
-class Famacha:
-
+class Segmentacao:
     
-    def __init__(self, path_model='model_segment/weights/best.pt') -> None:
-        self.model = YOLO(path_model)
+    def __init__(self, path_model_seg='model_segment/weights/best.pt') -> None:
+        self.seg_model = YOLO(path_model_seg)
         
     def predict_dir_image(self, list_fname,conf=0.5)->dict:
         """
         Processa uma imagem e retorna um dicionário de dicionários com os dados obtidos.
-        Cada chave do dicionário é o nome de uma imagemO dicionário possui as seguintes chaves -> xyxys,confidences,class_id,masks,probs
+        Cada chave do dicionário é o nome de uma imagem, dicionário possui as seguintes chaves -> xyxys,confidences,class_id,masks,probs
         
         Parâmetros:
             fname::str: Nome de uma imagem processada para o recorte
@@ -29,7 +42,7 @@ class Famacha:
         json = {}
         
         try:
-            results = self.model.predict(list_fname,conf=conf,boxes=False,max_det=2)
+            results = self.seg_model.predict(list_fname,conf=conf,boxes=False,max_det=2)
              
             for idx,result in enumerate(results):
                 
@@ -67,7 +80,7 @@ class Famacha:
         dic = dict()
         
         try:
-            results = self.model.predict(fname,conf=conf,boxes=False,max_det=2)
+            results = self.seg_model.predict(fname,conf=conf,boxes=False,max_det=2)
 
             result = results[0]
             boxes = result.boxes.cpu().numpy()
@@ -84,33 +97,7 @@ class Famacha:
         return dic
             
             
-    def mark_image(self,fname, confiance=0.5):
-        if exists('runs'):
-            rmtree('runs')
-        results = self.model.predict(fname,save=True,conf=confiance,max_det=2,show_conf=True,show_labels=True)
-        del results
     
-    def mark_dir_image(self,path:str, conf:float=0.5)->None:
-        """
-        Acessa um diretório de imagens e pega todas as imagens com a extenção .jpg
-        Salva na pasta 'runs/segment/predict' os resultados da marcação'
-        Salva uma pasta runs/segment/predict/labels'
-        
-        Parâmetros:
-            path::str: Diretório da pasta onde as imagens estão
-            conf::float: Valor representando percetual váriando entre 0 e 1
-            
-        Retorno:
-            Função não retorna nada
-        """
-        data = glob(join(path,'*.jpg'))
-        if exists('runs'):
-            rmtree('runs')
-        for image in data:
-            results = self.model.predict(image,save=True,conf=conf,imgsz=(640,640),max_det=2,show_conf=True,show_labels=True,save_txt=True,save_conf=True)
-            print(f"\nTerminei {image}")
-        del results, data
-        
     def axis_image(self,fname,confiance=0.5)->list:
         """
         Processa uma imagem e retorna os eixos x1,y1,x2,y2 que compõe os boxs que contem a zona de interesse da imagem.
@@ -127,7 +114,7 @@ class Famacha:
         """
         xyxys = []
         try:
-            result = self.model.predict(fname,conf=confiance,boxes=False,max_det=2,show_conf=False,show_labels=False)
+            result = self.seg_model.predict(fname,conf=confiance,boxes=False,max_det=2,show_conf=False,show_labels=False)
             
             boxes = result[0].boxes.cpu().numpy()
             
@@ -158,7 +145,7 @@ class Famacha:
         interest_region = []
         try:
             
-            image = cv2.imread(fname)
+            image = imread(fname)
             
             xyxys = self.axis_image(fname=fname,confiance=confiance)
             if len(xyxys) > 0:
@@ -172,33 +159,8 @@ class Famacha:
     
     
     def resize(self,fname,width=640,height=640):
-        img = cv2.resize(cv2.imread(fname),(width,height),interpolation=cv2.INTER_AREA)
+        img = resize(imread(fname),(width,height),interpolation=INTER_AREA)
         return img
-    
-    def rotate(self,fname)->tuple:
-        
-        img = cv2.imread(fname)
-
-        (h, w) = img.shape[:2]
-
-        center = (w / 2, h / 2)
-        
-        angle90 = 90
-        angle180 = 180
-        angle270 = 270
-        
-        scale = 1.0
-        
-        M = cv2.getRotationMatrix2D(center, angle90, scale)
-        rotated90 = cv2.warpAffine(img, M, (h, w))
-        
-        M = cv2.getRotationMatrix2D(center, angle180, scale)
-        rotated180 = cv2.warpAffine(img, M, (w, h))
-        
-        M = cv2.getRotationMatrix2D(center, angle270, scale)
-        rotated270 = cv2.warpAffine(img, M, (h, w))
-        
-        return (rotated90,rotated180,rotated270)
     
     
     def segment_img(self,fname:str):
@@ -219,7 +181,7 @@ class Famacha:
          
             xy = dados["masks"]
 
-            img = cv2.imread(fname)
+            img = imread(fname)
 
             mask = np.zeros(img.shape[:2], dtype=np.uint8)
 
@@ -227,10 +189,10 @@ class Famacha:
             pts = np.array([tuple(map(int, ponto)) for array in xy for ponto in array], dtype=np.int32)
 
             # Desenhar a região de interesse na máscara
-            cv2.fillPoly(mask, [pts], (255))  # Preenche a região da máscara com branco
+            fillPoly(mask, [pts], (255))  # Preenche a região da máscara com branco
 
             # Aplicar a máscara na imagem original
-            segmentacao = cv2.bitwise_and(img, img, mask=mask)
+            segmentacao = bitwise_and(img, img, mask=mask)
         
         except:
             pass
@@ -238,16 +200,15 @@ class Famacha:
         return segmentacao
     
     def segment_dir_image(self,dir_images,dir_output):
-        fnames = glob(dir_images)
+        fnames = glob(join(dir_images,'*.jpg'))
+        fail = join(dir_output,'fail')
+        if not exists(fail):
+            makedirs(fail)
         
         for file in fnames:
             image = self.segment_img(file)
-            if type(image) != None:
-                cv2.imwrite(join(dir_output,basename(file)), image)
-            else:
-                falha = join(dir_output,'falhas')
-                if not exists(falha):
-                    makedirs(falha)
-                    
-                cv2.imwrite(join(falha,basename(file)), cv2.imread(file))
+            try:
+                imwrite(join(dir_output,basename(file)), image)
+            except:
+                imwrite(join(fail,basename(file)), imread(file))
                 
