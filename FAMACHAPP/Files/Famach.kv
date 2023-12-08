@@ -1,0 +1,150 @@
+#:import Factory kivy.factory.Factory
+
+<Index>
+    canvas.before:
+        Color:
+            rgba: 242/255.0,220/255.0,165/255.0,1  # Substitua pelos valores de cor desejados (RGBA)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    GridLayout:
+        cols:1
+        rows:2
+        size: root.width, root.height
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint:(1,0.1)
+            background_color: [242/255.0,220/255.0,165/255.0,1]
+            height: 50
+            cols:3
+            Image:
+                size_hint: (0.17,1)
+                source: '../Imagens/logo.png'
+                size: (20,50)
+            Label:
+                color: "black"
+                text: 'FAMACHApp'
+                font_size: "32px"
+            Button:
+                size_hint: (0.2,1)
+                background_normal:""
+                background_color: [242/255.0,220/255.0,165/255.0,1]
+                Image:
+                    size: (40,40)
+                    source:"../Imagens/image05.png"
+                    center_x:self.parent.center_x
+                    center_y:self.parent.center_y
+        GridLayout:
+            cols:2
+            BoxLayout:
+                orientation: "vertical"
+                spacing: 20
+                size_hint:(0.15,1)
+                Button:
+                    background_normal:""
+                    background_color: [242/255.0,220/255.0,165/255.0,1]
+                    Image:
+                        source:"../Imagens/image01.png"
+                        center_x:self.parent.center_x+15
+                        center_y:self.parent.center_y
+                    Label:
+                        color: "black"
+                        text: "Informações\n  Famacha"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y - 70
+
+                Button:
+                    background_normal:""
+                    background_color: [242/255.0,220/255.0,165/255.0,1]
+                    Image:
+                        source:"../Imagens/image02.png"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y
+                    Label:
+                        color: "black"
+                        text: "Resultados"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y - 70
+                Button:
+                    background_normal:""
+                    background_color: [242/255.0,220/255.0,165/255.0,1]
+                    Image:
+                        source:"../Imagens/image03.png"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y
+                    Label:
+                        color: "black"
+                        text: "Salvar"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y - 70
+                Button:
+                    background_normal:""
+                    background_color: [242/255.0,220/255.0,165/255.0,1]
+                    Image:
+                        source:"../Imagens/image04.png"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y
+                    Label:
+                        color: "black"
+                        text: "Cartão FAMACHA"
+                        center_x:self.parent.center_x
+                        center_y:self.parent.center_y - 70
+            BoxLayout:
+                orientation: "vertical"
+                size_hint: (1, 1)
+                canvas.before:
+                    Color:
+                        rgba: 208/255, 245/255, 255/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Analise:
+
+<ImageButton@Button>
+    background_normal:""
+    background_color: [242/255.0,220/255.0,165/255.0,1]
+    Image:
+        source:"../Imagens/image01.png"
+        center_x:self.parent.center_x
+        center_y:self.parent.center_y
+    Label:
+        color: "black"
+        text: "Informações\n  Famacha"
+        center_x:self.parent.center_x
+        center_y:self.parent.center_y - 70
+
+<Analise>
+    size_hint: (0.5, 0.5)
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+    anchor_x: "center"
+    anchor_y: "center"
+    orientation: "vertical"
+    spacing: 20
+
+    Button:
+        size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
+        background_normal: ""
+        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        Image:
+            source: "../Imagens/pasta-de-imagens.png"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
+        Label:
+            color: "black"
+            text: "Pasta de Imagens"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y - 50  # Ajuste para centralizar verticalmente
+
+    Button:
+        size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
+        background_normal: ""
+        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        Image:
+            source: "../Imagens/galeria-de-imagens.png"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
+        Label:
+            color: "black"
+            text: "Imagem"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y - 50
