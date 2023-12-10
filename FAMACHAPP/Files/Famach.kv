@@ -29,6 +29,7 @@
                 size_hint: (0.2,1)
                 background_normal:""
                 background_color: [242/255.0,220/255.0,165/255.0,1]
+                on_press: root.stop_app()
                 Image:
                     size: (40,40)
                     source:"../Imagens/image05.png"
@@ -89,7 +90,7 @@
                         text: "Cartão FAMACHA"
                         center_x:self.parent.center_x
                         center_y:self.parent.center_y - 70
-            BoxLayout:
+            AnchorLayout:
                 orientation: "vertical"
                 size_hint: (1, 1)
                 canvas.before:
@@ -125,6 +126,7 @@
         size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
         background_normal: ""
         background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        on_press: root.open_file_chooser('Selecione uma Pasta',True)
         Image:
             source: "../Imagens/pasta-de-imagens.png"
             center_x: self.parent.center_x
@@ -139,6 +141,7 @@
         size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
         background_normal: ""
         background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        on_press: root.open_file_chooser('Selecione uma imagem',False)
         Image:
             source: "../Imagens/galeria-de-imagens.png"
             center_x: self.parent.center_x
