@@ -11,6 +11,9 @@ from kivy.uix.pagelayout import PageLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.popup import Popup
+from src.clas_model import Classificacao
+from src.seg_model import Segmentacao
+#from src.famacha import Famacha
 import os
 
 class Index(Widget):
@@ -45,6 +48,9 @@ class FamachApp(App):
     def build(self):
         self.title = "FAMACHAPP"
         self.icon = "../Imagens/logo.png"
+        self.classific = Classificacao('src\\model_classific\\RF_Model.pkl')
+        self.segment = Segmentacao('src\\model_segment\\weights\\best.pt')
+        #Famacha('src\\model_classific\\RF_Model.pkl','src\\model_segment\\weights\\best.pt')
         return Index()
 
 if __name__ == "__main__":

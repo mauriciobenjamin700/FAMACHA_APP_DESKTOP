@@ -1,1 +1,5 @@
 kivy[full]
+numpy
+pandas
+opencv-python
+ultralytics
