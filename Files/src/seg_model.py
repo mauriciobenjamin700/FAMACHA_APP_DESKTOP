@@ -5,7 +5,6 @@ from os.path import (
     join
 )
 from os import makedirs
-from shutil import rmtree
 from glob import glob
 from cv2 import (
     bitwise_and,
@@ -13,9 +12,7 @@ from cv2 import (
     imread, 
     INTER_AREA,
     fillPoly,
-    getRotationMatrix2D,
     resize,
-    warpAffine,
 )
 
 import numpy as np

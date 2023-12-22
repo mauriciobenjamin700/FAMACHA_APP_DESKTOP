@@ -51,11 +51,11 @@ def extract_all(glob_dir:list)->DataFrame:
         vermifuga_S_N = int(file[-5])
 
         if vermifuga_S_N > 0 and vermifuga_S_N <3:
-            resultado = False
+            resultado = 0
         elif vermifuga_S_N > 2 and vermifuga_S_N <6:
-            resultado = True
+            resultado = 1
         else:
-            resultado = 'Falha'
+            resultado = '-1'
 
         lista_dados.append([basename(file),resultado,media_R,media_G,media_B,mediana_R,mediana_G,mediana_B,desvio_R,desvio_G,desvio_B])
 
