@@ -15,7 +15,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.animation import Animation
 #from src.clas_model import Classificacao
 #from src.seg_model import Segmentacao
-from Files.src.famacha import Famacha
+from src.famacha import Famacha
 
 import os
 import threading
