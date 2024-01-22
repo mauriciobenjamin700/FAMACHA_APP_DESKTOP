@@ -122,15 +122,16 @@ class Classificacao:
             pasta::str: pasta que será processada
             output_filename::str: Nome e caminho de saida para o arquivo que será gerado.
             mode::str: Palavra chave que define como serão salvos os dados processados [csv,excel,json].
+            output::str:"pasta que será salvo o arquivo"
     
         Return:
             sinal::int: 0 para falha e 1 para sucesso
         """
         sinal = 0
-        
         to_save = join(expanduser('~'),output)
         glob_dir = glob(join(pasta,"*.jpg"))
         if(len(glob_dir)) > 0:
+            sinal = 1
             df = self.extract_all(glob_dir)
             output_filename = join(to_save,output_filename)
             match mode.lower():
@@ -143,7 +144,7 @@ class Classificacao:
                 case 'json':
                     df.to_json(output_filename+'.json',orient='records')
 
-            sinal = 1
+            
         
         return sinal
 
