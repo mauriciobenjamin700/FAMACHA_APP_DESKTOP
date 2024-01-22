@@ -113,7 +113,7 @@ class Classificacao:
 
         return df
     
-    def export(self,pasta:str,mode:str,output_filename="resultado", output="Documents")->None:
+    def export(self,pasta:str,mode:str="excel",output_filename="resultado", output="Documents")->None:
         """
         Processa uma página de imagens FAMACHA e salva o resultado no formato escolhido pelo usuário. 
         Opções válidas para mode [csv, excel, json]
@@ -124,20 +124,28 @@ class Classificacao:
             mode::str: Palavra chave que define como serão salvos os dados processados [csv,excel,json].
     
         Return:
-            None
+            sinal::int: 0 para falha e 1 para sucesso
         """
+        sinal = 0
+        
         to_save = join(expanduser('~'),output)
-        df = self.extract_all(glob(join(pasta,"*.jpg")))
-        output_filename = join(to_save,output_filename)
-        match mode.lower():
-            case 'csv':
-                df.to_csv(output_filename+'.csv',index=False)
-            
-            case 'excel':
-                df.to_excel(output_filename+'.xlsx',index=False)
-            
-            case 'json':
-                df.to_json(output_filename+'.json',orient='records')
+        glob_dir = glob(join(pasta,"*.jpg"))
+        if(len(glob_dir)) > 0:
+            df = self.extract_all(glob_dir)
+            output_filename = join(to_save,output_filename)
+            match mode.lower():
+                case 'csv':
+                    df.to_csv(output_filename+'.csv',index=False)
+                
+                case 'excel':
+                    df.to_excel(output_filename+'.xlsx',index=False)
+                
+                case 'json':
+                    df.to_json(output_filename+'.json',orient='records')
+
+            sinal = 1
+        
+        return sinal
 
 if __name__ == "__main__":
     c = Classificacao("Files/src/model_classific/RF_Model.pkl")
