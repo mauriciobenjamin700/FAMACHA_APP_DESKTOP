@@ -12,6 +12,7 @@ from numpy import (
 from os.path import basename
 from pickle import load
 from pandas import DataFrame
+from os.path import join,expanduser
 
 
 class Classificacao:
@@ -93,66 +94,41 @@ class Classificacao:
 
         lista_dados = []
 
-        colunas = ['Nome_Imagem','Vermifuga','Media_Canal_R','Media_Canal_G','Media_Canal_B','Mediana_Canal_R','Mediana_Canal_G','Mediana_Canal_B','Desvio_Canal_R','Desvio_Canal_G','Desvio_Canal_B']
+        colunas = ["IMAGEM", "SITUAÇÃO"]
+        
+        lista_dados = []
 
 
         for file in glob_dir:
 
             imagem_BGR = imread(file)
-
             imagem_RGB = cvtColor(imagem_BGR,COLOR_BGR2RGB)
 
-
-            media_R = round(mean(imagem_RGB[imagem_BGR[:,:,0]!= 0, 0]))
-            media_G = round(mean(imagem_RGB[imagem_BGR[:,:,1]!= 0, 1]))
-            media_B = round(mean(imagem_RGB[imagem_BGR[:,:,2]!= 0, 2]))
-
-            #calculando a mediana nos canais de cor
-            mediana_R = round(median(imagem_RGB[imagem_BGR[:,:,0]!= 0, 0]))
-            mediana_G = round(median(imagem_RGB[imagem_BGR[:,:,1]!= 0, 1]))
-            mediana_B = round(median(imagem_RGB[imagem_BGR[:,:,2]!= 0, 2]))
-
-            #calculando o desvio padrão nos canais de cor
-
-            desvio_R = round(std(imagem_RGB[imagem_BGR[:,:,0]!= 0, 0]))
-            desvio_G = round(std(imagem_RGB[imagem_BGR[:,:,1]!= 0, 1]))
-            desvio_B = round(std(imagem_RGB[imagem_BGR[:,:,2]!= 0, 2]))
-
-            #preenchendo os dados da imagem em uma lista  de listas
-
-            vermifuga_S_N = int(file[-5])
-
-            if vermifuga_S_N > 0 and vermifuga_S_N <3:
-                resultado = 0
-            elif vermifuga_S_N > 2 and vermifuga_S_N <6:
-                resultado = 1
+            if (self.predict(imagem_RGB)) == True:
+                lista_dados.append([basename(file),"SAUDÁVEL"])
             else:
-                resultado = '-1'
-
-            lista_dados.append([basename(file),resultado,media_R,media_G,media_B,mediana_R,mediana_G,mediana_B,desvio_R,desvio_G,desvio_B])
-
-
+                lista_dados.append([basename(file),"DOENTE"])
+                
         df = DataFrame(data=lista_dados,columns=colunas)
 
         return df
-
-
-
     
-    def export(self,df: DataFrame,mode:str,output_filename)->None:
+    def export(self,pasta:str,mode:str,output_filename="resultado", output="Documents")->None:
         """
         Processa uma página de imagens FAMACHA e salva o resultado no formato escolhido pelo usuário. 
         Opções válidas para mode [csv, excel, json]
 
         Args:
-            df::DataFrame: Dataframe pandas com os dados processados pelo classificador
+            pasta::str: pasta que será processada
             output_filename::str: Nome e caminho de saida para o arquivo que será gerado.
             mode::str: Palavra chave que define como serão salvos os dados processados [csv,excel,json].
     
         Return:
             None
         """
-            
+        to_save = join(expanduser('~'),output)
+        df = self.extract_all(glob(join(pasta,"*.jpg")))
+        output_filename = join(to_save,output_filename)
         match mode.lower():
             case 'csv':
                 df.to_csv(output_filename+'.csv',index=False)
@@ -164,9 +140,6 @@ class Classificacao:
                 df.to_json(output_filename+'.json',orient='records')
 
 if __name__ == "__main__":
-    from Files.src.seg_model import Segmentacao
-    s = Segmentacao("Files/src/model_segment/weights/best.pt")
-    dados = s.segment_img("Imagens/cabra_1.jpg")
     c = Classificacao("Files/src/model_classific/RF_Model.pkl")
-    print(c.predict(dados))
+    c.export("Imagens","csv")
     
