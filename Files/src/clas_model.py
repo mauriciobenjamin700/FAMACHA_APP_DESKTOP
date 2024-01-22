@@ -60,11 +60,7 @@ class Classificacao:
 
         colunas = ['Media_Canal_R','Media_Canal_G','Media_Canal_B','Mediana_Canal_R','Mediana_Canal_G','Mediana_Canal_B','Desvio_Canal_R','Desvio_Canal_G','Desvio_Canal_B']
 
-
-        imagem_BGR = imread(fname)
-
-        imagem_RGB = cvtColor(imagem_BGR,COLOR_BGR2RGB)
-
+        imagem_RGB = fname
 
         media_R = round(mean(imagem_RGB[:,:,0]))
         media_G = round(mean(imagem_RGB[:,:,1]))

@@ -1,4 +1,5 @@
 #:import Factory kivy.factory.Factory
+#:import NoTransition kivy.uix.screenmanager.NoTransition
 
 <Index>
     canvas.before:
@@ -16,20 +17,20 @@
             size_hint:(1,0.1)
             background_color: [242/255.0,220/255.0,165/255.0,1]
             height: 50
-            cols:3
             Image:
-                size_hint: (0.17,1)
+                size_hint: (0.18,1)
                 source: '../Imagens/logo.png'
                 size: (20,50)
             Label:
                 color: "black"
                 text: 'FAMACHApp'
-                font_size: "32px"
+                font_size: self.parent.width * 0.03
             Button:
                 size_hint: (0.2,1)
                 background_normal:""
                 background_color: [242/255.0,220/255.0,165/255.0,1]
-                on_press: root.stop_app()
+                on_press: background_color: [242/255.0,220/255.0,165/255.0,0.7]
+                on_release:root.stop_app()
                 Image:
                     size: (40,40)
                     source:"../Imagens/image05.png"
@@ -41,29 +42,19 @@
                 orientation: "vertical"
                 spacing: 20
                 size_hint:(0.15,1)
-                Button:
-                    background_normal:""
-                    background_color: [242/255.0,220/255.0,165/255.0,1]
-                    Image:
-                        source:"../Imagens/image01.png"
-                        center_x:self.parent.center_x+15
-                        center_y:self.parent.center_y
-                    Label:
-                        color: "black"
-                        text: "Informações\n  Famacha"
-                        center_x:self.parent.center_x
-                        center_y:self.parent.center_y - 70
 
                 Button:
                     background_normal:""
                     background_color: [242/255.0,220/255.0,165/255.0,1]
+                    on_release:root.switch2analise()
                     Image:
                         source:"../Imagens/image02.png"
                         center_x:self.parent.center_x
                         center_y:self.parent.center_y
                     Label:
                         color: "black"
-                        text: "Resultados"
+                        text: "Analise/Resultados"
+                        font_size:self.parent.width * 0.1
                         center_x:self.parent.center_x
                         center_y:self.parent.center_y - 70
                 Button:
@@ -76,11 +67,13 @@
                     Label:
                         color: "black"
                         text: "Salvar"
+                        font_size:self.parent.width * 0.1
                         center_x:self.parent.center_x
                         center_y:self.parent.center_y - 70
                 Button:
                     background_normal:""
                     background_color: [242/255.0,220/255.0,165/255.0,1]
+                    on_release: root.switch2cartao_famacha()
                     Image:
                         source:"../Imagens/image04.png"
                         center_x:self.parent.center_x
@@ -88,19 +81,39 @@
                     Label:
                         color: "black"
                         text: "Cartão FAMACHA"
+                        font_size:self.parent.width * 0.1
                         center_x:self.parent.center_x
                         center_y:self.parent.center_y - 70
-            AnchorLayout:
+            ScreenManager:
                 orientation: "vertical"
-                size_hint: (1, 1)
+                transition: NoTransition()
+                id: manager
                 canvas.before:
                     Color:
                         rgba: 208/255, 245/255, 255/255,1
                     Rectangle:
                         pos: self.pos
                         size: self.size
+                    Color:
+                        rgba: 1, 1, 1, 0.2
+                    Rectangle:
+                        pos: (self.width - self.width / 2) * 0.8, (self.height - self.height / 2) * 0.5
+                        size: self.width / 2, self.height / 2
+                        source: "../Imagens/background.png"
+                Imagem_Em_Analise:
+                    name: "Imagem_Em_Analise"
                 Analise:
+                    id: tela1
+                    name: "Analise"
+                Confirmar_Analise:
+                    id: tela2
+                    name: "Confirmar_Analise"
+                Cartao_Famacha:
+                    name: "Cartao_Famacha"
+                
+                
 
+# Widgets Personalizados
 <ImageButton@Button>
     background_normal:""
     background_color: [242/255.0,220/255.0,165/255.0,1]
@@ -114,40 +127,212 @@
         center_x:self.parent.center_x
         center_y:self.parent.center_y - 70
 
+<GreenRoundedButton@Button>:
+    my_color: [46/255.0, 241/255.0, 124/255.0, 1]
+    background_normal: ""
+    background_color: (0,0,0,0)  # Use a cor de fundo fornecida
+    canvas.before:
+        Color:
+            rgba: [0, 0, 0, 1]  # Cor da borda (preto)
+        Line:
+            width: 2  # Largura da borda
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 20)  # Raio do retângulo
+        Color:
+            rgba: self.my_color  # Transparente
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20]
+
+    on_release:
+        self.my_color = [46/255.0, 241/255.0, 124/255.0, 1]
+
+<GrayRoundedButton@Button>:
+    my_color: [221/255.0, 217/255.0, 217/255.0, 1]
+    background_normal: ""
+    background_color: (0,0,0,0)  # Use a cor de fundo fornecida
+    canvas.before:
+        Color:
+            rgba: [0, 0, 0, 1]  # Cor da borda (preto)
+        Line:
+            width: 2  # Largura da borda
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 20)  # Raio do retângulo
+        Color:
+            rgba: self.my_color  # Transparente
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20]
+    on_press:
+        self.my_color = [221/255.0, 217/255.0, 217/255.0, 0.5]
+
+    on_release:
+        self.my_color = [221/255.0, 217/255.0, 217/255.0, 1]
+
+
+# Telas
 <Analise>
-    size_hint: (0.5, 0.5)
-    pos_hint: {"center_x": 0.5, "center_y": 0.5}
-    anchor_x: "center"
-    anchor_y: "center"
-    orientation: "vertical"
-    spacing: 20
+    BoxLayout:
+        size_hint: (0.5, 0.5)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        anchor_x: "center"
+        anchor_y: "center"
+        orientation: "vertical"
+        spacing: 20
 
-    Button:
-        size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
-        background_normal: ""
-        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
-        on_press: root.open_file_chooser('Selecione uma Pasta',True)
-        Image:
-            source: "../Imagens/pasta-de-imagens.png"
-            center_x: self.parent.center_x
-            center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
-        Label:
-            color: "black"
-            text: "Pasta de Imagens"
-            center_x: self.parent.center_x
-            center_y: self.parent.center_y - 50  # Ajuste para centralizar verticalmente
+        Button:
+            size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
+            background_normal: ""
+            background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+            on_press: root.open_file_chooser('Selecione uma Pasta',True)
+            Image:
+                source: "../Imagens/pasta-de-imagens.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
+            Label:
+                color: "black"
+                text: "Pasta de Imagens"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y - 50  # Ajuste para centralizar verticalmente
 
-    Button:
-        size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
-        background_normal: ""
-        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
-        on_press: root.open_file_chooser('Selecione uma imagem',False)
-        Image:
-            source: "../Imagens/galeria-de-imagens.png"
-            center_x: self.parent.center_x
-            center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
+        Button:
+            size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
+            background_normal: ""
+            background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+            on_press: root.open_file_chooser('Selecione uma imagem',False)
+
+            Image:
+                source: "../Imagens/galeria-de-imagens.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y + 10  # Ajuste para centralizar verticalmente
+            Label:
+                color: "black"
+                text: "Imagem"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y - 50
+
+<Confirmar_Analise>:
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [255/255.0, 255/255.0, 255/255.0, 1]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+        
+    Label:
+        pos_hint:{"center_x":0.5,"center_y":0.75}
+        size_hint:(0.6, 0.2)
+        text: "Deseja realizar a análise?"
+        color: "black"
+        font_size: self.parent.width * 0.03
+        canvas.before:
+            Color:
+                rgba: [242/255.0,220/255.0,165/255.0,1]
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+                radius: [12]
+
+    GreenRoundedButton:
+        pos_hint: {"center_x":0.5, "center_y":0.5}
+        size_hint: (0.15, 0.15)
+        on_press:root.parent.current = "Imagem_Em_Analise"
+        #background_color: [46/255.0, 241/255.0, 124/255.0, 1]
         Label:
+            font_size: self.parent.width * 0.13
             color: "black"
-            text: "Imagem"
+            text: "Analisar"
             center_x: self.parent.center_x
-            center_y: self.parent.center_y - 50
+            center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
+
+    GrayRoundedButton:
+        pos_hint: {"center_x":0.5, "center_y":0.3}
+        size_hint: (0.15, 0.15)
+        on_press: root.parent.current = "Analise"
+        #background_color: [221/255.0, 217/255.0, 217/255.0, 1]
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Cancelar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+        
+        
+
+
+<Cartao_Famacha>
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        size_hint: (1, 1)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        BoxLayout:
+            size_hint_y: None
+            height: 1100
+            orientation:"vertical"
+            padding: [0,0,0,40]
+            Label:
+                color: "black"
+                text: "Cartão FAMACHA"
+                font_size: self.width * 0.05
+            Image:
+                source: '../Imagens/cabra_1.jpg'
+                size_hint: (0.25, 1.4)
+                pos_hint: {"center_x": 0.5}
+            Label:
+                color: "black"
+                text: "Guia de anemia"
+                font_size: self.width * 0.03
+            Label:
+                color: "black"
+                text: "1 - Examine o animal sob luz natural ou suficiente\n2 - Observe a coloração na parte medial da conjutiva\n3 - Determine o grau entre 1 e 5 e prossiga com o manejo"
+                font_size: self.width * 0.02
+            Label:
+                color: "gray"
+                text: "Na dúvida entre as categorias, opte pela categoria anterior."
+                font_size: self.width * 0.02
+            Image:
+                source: '../Imagens/famacha-em-ovinos.jpg'
+                pos_hint: {"center_x": 0.5}
+
+<Imagem_Em_Analise>
+    on_enter:
+        self.analisar()
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [19/255.0, 19/255.0, 19/255.0, 0.9]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+        
+    Label:
+        pos_hint:{"center_x":0.5,"center_y":0.75}
+        size_hint:(0.6, 0.2)
+        text: "[b]Imagem em Analise[b]"
+        color: "white"
+        font_size: self.parent.width * 0.04
+        markup: True
+        bold: True
+    Image:
+        source: '../Imagens/imagem_analise.png'
+        size_hint:(0.5, 0.5)
+        pos_hint: {"center_x": 0.5,"center_y": 0.45}
+    
+    Image:
+        id: rotating_image
+        source: '../Imagens/girar-seta.png'
+        size_hint:(0.1, 0.1)
+        pos_hint: {"center_x": 0.5,"center_y": 0.2}
+        angle: 0
