@@ -35,16 +35,16 @@ class Classificacao:
             model = load(arquivo)
             return model
         
-    def predict(self, path):
+    def predict(self, imagem_RGB):
         
-        novo_dado = self.extract_one(path=path)
+        novo_dado = self.extract_one(imagem_RGB)
 
         previsao = self.clas_model.predict(novo_dado)
 
         return bool(previsao)
 
 
-    def extract_one(self,fname:str)->DataFrame:
+    def extract_one(self,imagem_RGB)->DataFrame:
         """
         Extrai as caracteristica de uma image que teve seu caminho passado como parâmetro e 
         arquiva os resultados em um DF
@@ -59,8 +59,6 @@ class Classificacao:
         lista_dados = []
 
         colunas = ['Media_Canal_R','Media_Canal_G','Media_Canal_B','Mediana_Canal_R','Mediana_Canal_G','Mediana_Canal_B','Desvio_Canal_R','Desvio_Canal_G','Desvio_Canal_B']
-
-        imagem_RGB = fname
 
         media_R = round(mean(imagem_RGB[:,:,0]))
         media_G = round(mean(imagem_RGB[:,:,1]))
@@ -164,4 +162,11 @@ class Classificacao:
             
             case 'json':
                 df.to_json(output_filename+'.json',orient='records')
+
+if __name__ == "__main__":
+    from Files.src.seg_model import Segmentacao
+    s = Segmentacao("Files/src/model_segment/weights/best.pt")
+    dados = s.segment_img("Imagens/cabra_1.jpg")
+    c = Classificacao("Files/src/model_classific/RF_Model.pkl")
+    print(c.predict(dados))
     

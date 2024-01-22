@@ -60,13 +60,13 @@ class Segmentacao:
         return json
             
 
-    def predict_image(self, fname:str,conf:float=0.5):
+    def predict_image(self, image:str,conf:float=0.5):
         """
         Processa uma imagem e retorna um dicionário com os dados obtidos.
         O dicionário possui as seguintes chaves -> xyxys,confidences,class_id,masks,probs
         
         Parâmetros:
-            fname::str: Nome de uma imagem processada para o recorte
+            image::str: Uma imagem processada para o recorte
             confiance::float: Grau de confiança que a rede usará para decidir as zonas de recorte,
             o valor de confiança pode varia entre 0 e 1.
             
@@ -77,7 +77,7 @@ class Segmentacao:
         dic = dict()
         
         try:
-            results = self.seg_model.predict(fname,conf=conf,boxes=False,max_det=2)
+            results = self.seg_model.predict(image,conf=conf,boxes=False,max_det=2)
 
             result = results[0]
             boxes = result.boxes.cpu().numpy()
@@ -155,14 +155,24 @@ class Segmentacao:
         return interest_region
     
     
-    def resize(self,fname,width=640,height=640):
+    def read_resize(self,fname:str,width=640,height=640)->np.array:
+        """
+
+        Args:
+            fname (str): _description_
+            width (int, optional): _description_. Defaults to 640.
+            height (int, optional): _description_. Defaults to 640.
+
+        Returns:
+            np.array: Imagem carregada e redimensionada
+        """
         img = resize(imread(fname),(width,height),interpolation=INTER_AREA)
         return img
     
     
     def segment_img(self,fname:str):
         """
-        Recebe uma imagem famacha, a segmenta e retorna a zona de interesse coletada após a segmentação.
+        Carrega uma imagem da memoria atráves de seu nome de arquivo, segmenta e retorna a zona de interesse coletada após a segmentação.
         
         Parâmetros:
             fname::str: Nome do arquivo que será segmentado
@@ -174,11 +184,11 @@ class Segmentacao:
         segmentacao = None
         
         try:
-            dados = self.predict_image(fname=fname)
+            dados = self.predict_image(fname)
          
             xy = dados["masks"]
 
-            img = imread(fname)
+            img = self.read_resize(fname)
 
             mask = np.zeros(img.shape[:2], dtype=np.uint8)
 
@@ -208,4 +218,8 @@ class Segmentacao:
                 imwrite(join(dir_output,basename(file)), image)
             except:
                 imwrite(join(fail,basename(file)), imread(file))
-                
+
+if __name__ == "__main__":
+    s = Segmentacao("Files/src/model_segment/weights/best.pt")
+    cabra = s.read_resize("Imagens/cabra_1.jpg")
+    print(s.predict_image(cabra))

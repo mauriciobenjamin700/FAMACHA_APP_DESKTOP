@@ -65,13 +65,13 @@ def extract_all(glob_dir:list)->DataFrame:
     return df
 
 
-def extract_one(fname:str)->DataFrame:
+def extract_one(imagem_RGB)->DataFrame:
     """
     Extrai as caracteristica de uma image que teve seu caminho passado como parâmetro e 
     arquiva os resultados em um DF
 
     Args:
-        fname::str: Nome da imagem que será aberta e processada.
+        imagem_RGB::np.array: Imagem RGB que terá suas caracteristicas extraidas.
 
     Returns:
         df::DataFrame: DataFrame pandas contendo os resultados da extração.
@@ -80,12 +80,6 @@ def extract_one(fname:str)->DataFrame:
     lista_dados = []
 
     colunas = ['Media_Canal_R','Media_Canal_G','Media_Canal_B','Mediana_Canal_R','Mediana_Canal_G','Mediana_Canal_B','Desvio_Canal_R','Desvio_Canal_G','Desvio_Canal_B']
-
-
-    imagem_BGR = imread(fname)
-
-    imagem_RGB = cvtColor(imagem_BGR,COLOR_BGR2RGB)
-
 
     media_R = round(mean(imagem_RGB[:,:,0]))
     media_G = round(mean(imagem_RGB[:,:,1]))
@@ -98,7 +92,6 @@ def extract_one(fname:str)->DataFrame:
     desvio_R = round(std(imagem_RGB[:,:,0]))
     desvio_G = round(std(imagem_RGB[:,:,1]))
     desvio_B = round(std(imagem_RGB[:,:,2]))
-
 
     lista_dados.append([media_R,media_G,media_B,mediana_R,mediana_G,mediana_B,desvio_R,desvio_G,desvio_B])
 
