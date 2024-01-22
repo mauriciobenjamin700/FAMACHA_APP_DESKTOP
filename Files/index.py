@@ -22,7 +22,7 @@ import threading
 
 process_image = ''
 f = Famacha("Files/src/model_classific/RF_Model.pkl","Files/src/model_segment/weights/best.pt")
-
+f.classificacao.export
 
 def inicia_analise(file_path):
     doente = -1
@@ -48,6 +48,12 @@ class Index(Widget):
     
     def switch2imagem_em_analise(self):
         self.ids.manager.current = "Imagem_Em_Analise"
+
+    def switch2diagnostico_ruim(self):
+        self.ids.manager.current = "Diagnostico_Ruim"
+
+    def switch2diagnostico_bom(self):
+        self.ids.manager.current = "Diagnostico_Bom"
 
 # Telas secundarias
 class Analise(Screen):
@@ -77,14 +83,16 @@ class Cartao_Famacha(Screen):
     pass
 
 class Confirmar_Analise(Screen):
-    pass
-
-class Imagem_Em_Analise(Screen):
     def analisar(self):
         print("Analise Iniciada\n")
-        #resultado = inicia_analise(process_image)
-        #print(resultado)
+        resultado = inicia_analise(process_image)
+        print(resultado)
+        if resultado == 1:
+            myapp.index_instance.switch2diagnostico_ruim()
+        elif resultado == 0:
+            myapp.index_instance.switch2diagnostico_bom()
 
+class Imagem_Em_Analise(Screen):
     def start_rotation_animation(self):
         # Criação da animação para girar a imagem continuamente
         anim = Animation(angle=360, duration=2)  # 360 graus em 2 segundos
@@ -92,6 +100,14 @@ class Imagem_Em_Analise(Screen):
         anim.repeat = True  # Repete a animação continuamente
         anim.start(self.ids.rotating_image)  # Inicia a animação no objeto de imagem
 
+class Diagnostico_Ruim(Screen):
+    pass
+
+class Diagnostico_Bom(Screen):
+    pass
+
+class Diagnostico_Falho(Screen):
+    pass
 # Funções auxiliares 
 class CustomFileChooser(FileChooserListView):
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
