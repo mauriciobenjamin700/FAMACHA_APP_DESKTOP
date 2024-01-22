@@ -100,6 +100,12 @@
                         pos: (self.width - self.width / 2) * 0.8, (self.height - self.height / 2) * 0.5
                         size: self.width / 2, self.height / 2
                         source: "../Imagens/background.png"
+                Diagnostico_Falho:
+                    name: "Diagnostico_Falho"
+                Diagnostico_Bom:
+                    name: "Diagnostico_Bom"
+                Diagnostico_Ruim:
+                    name: "Diagnostico_Ruim"
                 Imagem_Em_Analise:
                     name: "Imagem_Em_Analise"
                 Analise:
@@ -169,7 +175,27 @@
     on_release:
         self.my_color = [221/255.0, 217/255.0, 217/255.0, 1]
 
+<BrownRoundedButton@Button>:
+    my_color: [206/255.0, 184/255.0, 99/255.0, 1]
+    background_normal: ""
+    background_color: (0,0,0,0)  # Use a cor de fundo fornecida
+    canvas.before:
+        Color:
+            rgba: [0, 0, 0, 1]  # Cor da borda (preto)
+        Line:
+            width: 2  # Largura da borda
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 20)  # Raio do retângulo
+        Color:
+            rgba: self.my_color  # Transparente
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20]
+    on_press:
+        self.my_color = [206/255.0, 184/255.0, 99/255.0, 0.5]
 
+    on_release:
+        self.my_color = [206/255.0, 184/255.0, 99/255.0, 1]
 # Telas
 <Analise>
     BoxLayout:
@@ -242,7 +268,7 @@
     GreenRoundedButton:
         pos_hint: {"center_x":0.5, "center_y":0.5}
         size_hint: (0.15, 0.15)
-        on_press:root.parent.current = "Imagem_Em_Analise"
+        on_press: root.analisar()
         #background_color: [46/255.0, 241/255.0, 124/255.0, 1]
         Label:
             font_size: self.parent.width * 0.13
@@ -302,8 +328,6 @@
                 pos_hint: {"center_x": 0.5}
 
 <Imagem_Em_Analise>
-    on_enter:
-        self.analisar()
     BoxLayout:
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
         orientation: "vertical"
@@ -336,3 +360,127 @@
         size_hint:(0.1, 0.1)
         pos_hint: {"center_x": 0.5,"center_y": 0.2}
         angle: 0
+
+<Diagnostico_Ruim>
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [19/255.0, 19/255.0, 19/255.0, 0.9]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+
+    Image:
+        source: '../Imagens/atencao.png'
+        size_hint:(0.2, 0.2)
+        pos_hint: {"center_x": 0.5,"center_y": 0.75}
+    Label:
+        pos_hint:{"center_x":0.5,"center_y":0.6}
+        #size_hint:(0.6, 0.2)
+        text: "[b]Atenção[b]"
+        color: "yellow"
+        font_size: self.parent.width * 0.04
+        markup: True
+        bold: True
+    Label:
+        font_size: self.parent.width * 0.026
+        pos_hint:{"center_x":0.5,"center_y":0.4}
+        text: "[b]           Animal diagnosticado como DOENTE,\n       recomenda-se que procure tratar o animal.\n                  Em caso de dúvidas sobre a\n           vermifugação, entre em contato com\n um veterinário ou profissional de saúde animal.[b]"
+        markup: True
+        bold: True
+    BrownRoundedButton:
+        on_press: root.parent.current = "Analise"
+        size_hint:(0.2, 0.1)
+        pos_hint:{"center_x":0.5,"center_y":0.07}
+        background_normal: ""
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Voltar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+
+<Diagnostico_Bom>
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [19/255.0, 19/255.0, 19/255.0, 0.9]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+
+    Image:
+        source: '../Imagens/verifica.png'
+        size_hint:(0.2, 0.2)
+        pos_hint: {"center_x": 0.5,"center_y": 0.7}
+    Label:
+        pos_hint:{"center_x":0.5,"center_y":0.55}
+        #size_hint:(0.6, 0.2)
+        text: "[b]Saudável[b]"
+        color: "green"
+        font_size: self.parent.width * 0.04
+        markup: True
+        bold: True
+    Label:
+        font_size: self.parent.width * 0.026
+        pos_hint:{"center_x":0.5,"center_y":0.45}
+        text: "[b]       Animal diagnosticado como SAUDÁVEL.[b]"
+        markup: True
+        bold: True
+    BrownRoundedButton:
+        on_press: root.parent.current = "Analise"
+        size_hint:(0.2, 0.1)
+        pos_hint:{"center_x":0.5,"center_y":0.07}
+        background_normal: ""
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Voltar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+
+<Diagnostico_Falho>
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [19/255.0, 19/255.0, 19/255.0, 0.9]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+
+    Image:
+        source: '../Imagens/erro.png'
+        size_hint:(0.2, 0.2)
+        pos_hint: {"center_x": 0.52,"center_y": 0.7}
+    Label:
+        font_size: self.parent.width * 0.026
+        pos_hint:{"center_x":0.5,"center_y":0.45}
+        text: "[b]       Erro na análise da imagem.[b]"
+        markup: True
+        bold: True
+    BrownRoundedButton:
+        on_press: root.parent.current = "Analise"
+        size_hint:(0.2, 0.1)
+        pos_hint:{"center_x":0.5,"center_y":0.07}
+        background_normal: ""
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Voltar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
