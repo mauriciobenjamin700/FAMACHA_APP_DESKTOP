@@ -113,7 +113,7 @@ class Classificacao:
 
         return df
     
-    def export(self,pasta:str,mode:str="excel",output_filename="resultado", output="Documents")->None:
+    def export(self,pasta:str,mode:str="excel",output_filename="resultado", output="Documents")->int:
         """
         Processa uma página de imagens FAMACHA e salva o resultado no formato escolhido pelo usuário. 
         Opções válidas para mode [csv, excel, json]
