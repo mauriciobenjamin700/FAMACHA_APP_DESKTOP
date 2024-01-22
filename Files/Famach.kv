@@ -100,6 +100,10 @@
                         pos: (self.width - self.width / 2) * 0.8, (self.height - self.height / 2) * 0.5
                         size: self.width / 2, self.height / 2
                         source: "../Imagens/background.png"
+                Salvar:
+                    name: "Salvar"
+                Diagnostico_Pasta_Bom:
+                    name: "Diagnostico_Pasta_Bom"
                 Diagnostico_Falho:
                     name: "Diagnostico_Falho"
                 Diagnostico_Bom:
@@ -210,7 +214,7 @@
             size_hint: (1, 0.5)  # Largura 100%, altura 20% da BoxLayout pai
             background_normal: ""
             background_color: [206/255.0, 184/255.0, 99/255.0, 1]
-            on_press: root.open_file_chooser('Selecione uma Pasta',True)
+            on_press: root.open_folder_chooser('Selecione uma Pasta',True)
             Image:
                 source: "../Imagens/pasta-de-imagens.png"
                 center_x: self.parent.center_x
@@ -470,7 +474,7 @@
     Label:
         font_size: self.parent.width * 0.026
         pos_hint:{"center_x":0.5,"center_y":0.45}
-        text: "[b]       Erro na análise da imagem.[b]"
+        text: "[b]       Erro na análise.[b]"
         markup: True
         bold: True
     BrownRoundedButton:
@@ -484,3 +488,85 @@
             text: "Voltar"
             center_x: self.parent.center_x
             center_y: self.parent.center_y
+
+<Diagnostico_Pasta_Bom>
+    BoxLayout:
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: "vertical"
+        spacing: 20
+        size_hint: (0.6, 0.7)
+        canvas.before:
+            Color:
+                rgba: [19/255.0, 19/255.0, 19/255.0, 0.9]  # Substitua pelos valores de cor desejados (RGBA)
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        padding: [0,0,0,30]
+
+    Image:
+        source: '../Imagens/verifica2.png'
+        size_hint:(0.2, 0.2)
+        pos_hint: {"center_x": 0.5,"center_y": 0.7}
+    Label:
+        font_size: self.parent.width * 0.026
+        pos_hint:{"center_x":0.5,"center_y":0.45}
+        text: "[b]       Sucesso na análise da pasta\n                     de imagens.[b]"
+        markup: True
+        bold: True
+    BrownRoundedButton:
+        on_press: root.parent.current = "Analise"
+        size_hint:(0.2, 0.1)
+        pos_hint:{"center_x":0.3,"center_y":0.07}
+        background_normal: ""
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Voltar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+    GreenRoundedButton:
+        on_press: root.parent.current = "Analise"
+        size_hint:(0.2, 0.1)
+        pos_hint:{"center_x":0.7,"center_y":0.07}
+        background_normal: ""
+        Label:
+            font_size: self.parent.width * 0.13
+            color: "black"
+            text: "Salvar"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+
+<Salvar>
+    Label:
+        text: "Salvar como:"
+        color: "black"
+        font_size: self.parent.width * 0.1
+        pos_hint: {"center_x":0.5,"center_y":0.8}
+    Button:
+        pos_hint: {"center_x":0.5,"center_y":0.6}
+        size_hint: (0.3, 0.15) 
+        background_normal: ""
+        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        Image:
+            source: "../Imagens/csv.png"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
+    Button:
+        pos_hint: {"center_x":0.5,"center_y":0.4}
+        size_hint: (0.3, 0.15) 
+        background_normal: ""
+        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        Image:
+            source: "../Imagens/xlsx.png"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
+    Button:
+        pos_hint: {"center_x":0.5,"center_y":0.2}
+        size_hint: (0.3, 0.15) 
+        background_normal: ""
+        background_color: [206/255.0, 184/255.0, 99/255.0, 1]
+        Image:
+            source: "../Imagens/json.png"
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
+

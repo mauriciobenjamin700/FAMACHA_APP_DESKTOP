@@ -150,5 +150,5 @@ class Classificacao:
 
 if __name__ == "__main__":
     c = Classificacao("Files/src/model_classific/RF_Model.pkl")
-    c.export("Imagens","csv")
+    print(c.export("Imagens","csv"))
     

@@ -19,10 +19,9 @@ from Files.src.famacha import Famacha
 
 import os
 import threading
-
+process_type = 1
 process_image = ''
 f = Famacha("Files/src/model_classific/RF_Model.pkl","Files/src/model_segment/weights/best.pt")
-f.classificacao.export
 
 def inicia_analise(file_path):
     doente = -1
@@ -32,6 +31,10 @@ def inicia_analise(file_path):
         if f.classificacao.predict(resultado):
             doente = 1
     return doente
+
+def processa_pasta(file_path,mode):
+    resultado = f.classificacao.export(file_path,mode)
+    return resultado
 
 class Index(Widget):    
     def stop_app(self):
@@ -54,10 +57,23 @@ class Index(Widget):
 
     def switch2diagnostico_bom(self):
         self.ids.manager.current = "Diagnostico_Bom"
+    
+    def switch2diagnostico_falho(self):
+        self.ids.manager.current = "Diagnostico_Falho"
 
 # Telas secundarias
 class Analise(Screen):
     def open_file_chooser(self,title,dirselect):
+        global process_type
+        process_type = 0
+        self.popup_title = title
+        self.initial_path = os.path.join(os.path.expanduser('~'),'Pictures')
+        file_chooser_popup = FileChooserPopup(callback=self.file_selected,title=self.popup_title,initial_path=self.initial_path,dirselect=dirselect)
+        file_chooser_popup.open()
+
+    def open_folder_chooser(self,title,dirselect):
+        global process_type
+        process_type = 1
         self.popup_title = title
         self.initial_path = os.path.join(os.path.expanduser('~'),'Pictures')
         file_chooser_popup = FileChooserPopup(callback=self.file_selected,title=self.popup_title,initial_path=self.initial_path,dirselect=dirselect)
@@ -68,13 +84,19 @@ class Analise(Screen):
         retorna -1,0,1
         """
         print("Arquivo selecionado na função principal:", file_path)
-
-        extensao = file_path.split('.')[-1]
-        print(extensao)
-        if extensao == 'jpg':
-            global process_image 
+        global process_image
+        global process_type
+        print(process_type)
+        if process_type == 1:
             process_image = file_path
             myapp.app_switch2confirmar_analise()
+        else:
+            extensao = file_path.split('.')[-1]
+            print(extensao)
+            if extensao == 'jpg':
+                 
+                process_image = file_path
+                myapp.app_switch2confirmar_analise()
             
         
         #Classificação e resultados virao daqui
@@ -84,13 +106,25 @@ class Cartao_Famacha(Screen):
 
 class Confirmar_Analise(Screen):
     def analisar(self):
+        global process_type
         print("Analise Iniciada\n")
-        resultado = inicia_analise(process_image)
-        print(resultado)
-        if resultado == 1:
-            myapp.index_instance.switch2diagnostico_ruim()
-        elif resultado == 0:
-            myapp.index_instance.switch2diagnostico_bom()
+        if process_type == 1:
+            resultado = processa_pasta(process_image)
+            if resultado == 1:
+                print("Deu certo!")
+            elif resultado == 0:
+                myapp.index_instance.switch2diagnostico_falho()
+            else:
+                print(f"Deu ruim! {resultado}")
+        else:
+            resultado = inicia_analise(process_image)
+            print(resultado)
+            if resultado == 1:
+                myapp.index_instance.switch2diagnostico_ruim()
+            elif resultado == 0:
+                myapp.index_instance.switch2diagnostico_bom()
+            else:
+                myapp.index_instance.switch2diagnostico_falho()
 
 class Imagem_Em_Analise(Screen):
     def start_rotation_animation(self):
@@ -107,6 +141,12 @@ class Diagnostico_Bom(Screen):
     pass
 
 class Diagnostico_Falho(Screen):
+    pass
+
+class Diagnostico_Pasta_Bom(Screen):
+    pass
+
+class Salvar(Screen):
     pass
 # Funções auxiliares 
 class CustomFileChooser(FileChooserListView):
