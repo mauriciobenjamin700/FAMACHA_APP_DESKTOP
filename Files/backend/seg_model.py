@@ -123,36 +123,7 @@ class Segmentacao:
             xyxys = None    
         return xyxys
     
-    #recorta a imagem
-    def snip_img(self,fname:str, confiance:float=0.5):
-        """
-        Processa uma imagem e retorna os pixels recortados da imagem.
-        Onde os pixels compõe zonas de interesse que a imagem pode vir a possuir
-        
-        Parâmetros:
-            fname::str: Nome de uma imagem processada para o recorte
-            confiance::float: Grau de confiança que a rede usará para decidir as zonas de recorte,
-            o valor de confiança pode varia entre 0 e 1.
-        
-        Retorno:
-            interest_region::list: Lista contendo as partes da imagem que estão nossa zona de interesse ou
-            lista vazia caso não encontre nada
     
-        """
-        interest_region = []
-        try:
-            
-            image = imread(fname)
-            
-            xyxys = self.axis_image(fname=fname,confiance=confiance)
-            if len(xyxys) > 0:
-                for xyxy in xyxys:
-                    x1,y1,x2,y2 = xyxy
-                    interest_region.append(image[y1:y2, x1:x2])
-        except:
-            interest_region = None
-            
-        return interest_region
     
     
     def read_resize(self,fname:str,width=640,height=640)->np.array:
