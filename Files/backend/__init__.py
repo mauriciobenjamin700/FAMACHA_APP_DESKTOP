@@ -1,2 +1,0 @@
-from class_model import Classificacao
-from seg_model import Segmentacao
