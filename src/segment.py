@@ -1,20 +1,16 @@
 from ultralytics import YOLO
 from os.path import (
     basename,
-    exists,
     join
 )
-from os import makedirs
 from glob import glob
 from cv2 import (
     bitwise_and,
-    imwrite,
     imread, 
     INTER_AREA,
     fillPoly,
     resize,
 )
-
 import numpy as np
 
 class Segmentacao:
@@ -177,20 +173,41 @@ class Segmentacao:
         
         return segmentacao
     
-    def segment_dir_image(self,dir_images,dir_output):
-        fnames = glob(join(dir_images,'*.jpg'))
-        fail = join(dir_output,'fail')
-        if not exists(fail):
-            makedirs(fail)
-        
+    def segment_dir_image(self, dir_images:str) -> list:
+        """
+        Processa um diretório de imagens e retorna uma lista de matrizes, onde cada matriz é uma imagem valida e segmentada
+        As imagens invalidas são descartadas durante a segmentação
+
+        Args:
+            dir_images::str: Diretório contendo as imagens
+
+        Returns:
+            imagens::list: Lista contendo as imagens após a segmentação
+        """
+        extensoes = ['*.jpg', '*.jpeg', '*.png']
+        fnames = []
+
+        for i in extensoes:
+            fnames += glob(join(dir_images, i))
+            
+        print(fnames)
+
+        imagens = []
+
         for file in fnames:
             image = self.segment_img(file)
-            try:
-                imwrite(join(dir_output,basename(file)), image)
-            except:
-                imwrite(join(fail,basename(file)), imread(file))
+
+            # Corrigindo a condição para verificar se 'image' não é None
+            if image is not None:
+                imagens += [image]
+
+        return imagens
+            
 
 if __name__ == "__main__":
-    s = Segmentacao("Files/src/model_segment/weights/best.pt")
-    cabra = s.read_resize("Imagens/cabra_1.jpg")
-    print(s.predict_image(cabra))
+    from pathlib import Path
+    s = Segmentacao(Path("src/models/YOLO.pt").resolve())
+    #cabra = s.read_resize("Imagens/cabra_1.jpg")
+    cabra = s.segment_dir_image("Imagens")
+    print(cabra)
+    #print(s.predict_image(cabra))

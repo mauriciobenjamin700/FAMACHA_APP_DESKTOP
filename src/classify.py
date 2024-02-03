@@ -1,15 +1,8 @@
-from cv2 import (
-    imread, 
-    cvtColor, 
-    COLOR_BGR2RGB
-)
-from glob import glob
 from numpy import (
     mean, 
     median,
     std
 )
-from os.path import basename
 from pickle import load
 from pandas import DataFrame
 from os.path import join,expanduser
@@ -80,13 +73,14 @@ class Classificacao:
 
         return df
     
-    def extract_all(self, glob_dir:list)->DataFrame:
+    def extract_all(self, images:list, name_images:list)->DataFrame:
         """
         Extrai as caracteristica de uma base de dados passada como parâmetro e 
         arquiva os resultados em um DF
         
         Args:
-            glob_dir::list: Lista contendo o caminho de cada imagem permitindo as mesmas serem abertas.
+            images::list: Lista contendo as imagens já segmentadas para a extração de caracteristicas
+            name_images::list: Lista contendo o nome de cada image
         
         Return:
             df::DataFrame: DataFrame pandas contendo os resultados da extração.
@@ -98,28 +92,27 @@ class Classificacao:
         
         lista_dados = []
 
+        #não está segmentando, apenas classificando, seria adequado segmentar no processo
+        for id,image in enumerate(images):
 
-        for file in glob_dir:
 
-            imagem_BGR = imread(file)
-            imagem_RGB = cvtColor(imagem_BGR,COLOR_BGR2RGB)
-
-            if (self.predict(imagem_RGB)) == True:
-                lista_dados.append([basename(file),"SAUDÁVEL"])
+            if (self.predict(image)) == True:
+                lista_dados.append([id,"SAUDÁVEL"])
             else:
-                lista_dados.append([basename(file),"DOENTE"])
+                lista_dados.append([id,"DOENTE"])
                 
         df = DataFrame(data=lista_dados,columns=colunas)
 
         return df
     
-    def export(self,pasta:str,mode:str="excel",output_filename="resultado", output="Documents")->int:
+    def export(self,pasta:list, rotulos:list,mode:str="excel",output_filename="resultado", output="Documents")->int:
         """
         Processa uma página de imagens FAMACHA e salva o resultado no formato escolhido pelo usuário. 
         Opções válidas para mode [csv, excel, json]
 
         Args:
-            pasta::str: pasta que será processada
+            pasta::list: imagens segmentadas da pasta
+            rotulos::str: lista contendo os nomes de identificação de cada imagem
             output_filename::str: Nome e caminho de saida para o arquivo que será gerado.
             mode::str: Palavra chave que define como serão salvos os dados processados [csv,excel,json].
             output::str:"pasta que será salvo o arquivo"
@@ -129,10 +122,11 @@ class Classificacao:
         """
         sinal = 0
         to_save = join(expanduser('~'),output)
-        glob_dir = glob(join(pasta,"*.jpg"))
-        if(len(glob_dir)) > 0:
+        
+            
+        if(len(pasta)) > 0:
             sinal = 1
-            df = self.extract_all(glob_dir)
+            df = self.extract_all(pasta,rotulos)
             output_filename = join(to_save,output_filename)
             match mode.lower():
                 case 'csv':
@@ -149,6 +143,8 @@ class Classificacao:
         return sinal
 
 if __name__ == "__main__":
-    c = Classificacao("Files/src/model_classific/RF_Model.pkl")
+    from pathlib import Path
+    
+    c = Classificacao(Path("src/models/RF.pkl").resolve())
     print(c.export("Imagens","csv"))
     
