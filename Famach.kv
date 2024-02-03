@@ -1,6 +1,6 @@
 #:kivy 2.1.0
 #:import Factory kivy.factory.Factory
-#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import CardTransition kivy.uix.screenmanager.CardTransition
 
 <Index>
     canvas.before:
@@ -87,7 +87,7 @@
                         center_y:self.parent.center_y - 70
             ScreenManager:
                 orientation: "vertical"
-                transition: NoTransition()
+                transition: CardTransition()
                 id: manager
                 canvas.before:
                     Color:
@@ -101,6 +101,12 @@
                         pos: (self.width - self.width / 2) * 0.8, (self.height - self.height / 2) * 0.5
                         size: self.width / 2, self.height / 2
                         source: "Imagens/background.png"
+<<<<<<< Updated upstream:Famach.kv
+=======
+                Analise:
+                    id: tela1
+                    name: "Analise"
+>>>>>>> Stashed changes:Files/Famach.kv
                 Salvar:
                     name: "Salvar"
                 Diagnostico_Pasta_Bom:
@@ -113,9 +119,6 @@
                     name: "Diagnostico_Ruim"
                 Imagem_Em_Analise:
                     name: "Imagem_Em_Analise"
-                Analise:
-                    id: tela1
-                    name: "Analise"
                 Confirmar_Analise:
                     id: tela2
                     name: "Confirmar_Analise"
@@ -544,6 +547,7 @@
         font_size: self.parent.width * 0.1
         pos_hint: {"center_x":0.5,"center_y":0.8}
     Button:
+        on_press: root.save_csv()
         pos_hint: {"center_x":0.5,"center_y":0.6}
         size_hint: (0.3, 0.15) 
         background_normal: ""
@@ -553,6 +557,7 @@
             center_x: self.parent.center_x
             center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
     Button:
+        on_press: root.save_excel()
         pos_hint: {"center_x":0.5,"center_y":0.4}
         size_hint: (0.3, 0.15) 
         background_normal: ""
@@ -562,6 +567,7 @@
             center_x: self.parent.center_x
             center_y: self.parent.center_y  # Ajuste para centralizar verticalmente
     Button:
+        on_press: root.save_json()
         pos_hint: {"center_x":0.5,"center_y":0.2}
         size_hint: (0.3, 0.15) 
         background_normal: ""
