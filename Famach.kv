@@ -61,19 +61,6 @@
                 Button:
                     background_normal:""
                     background_color: [242/255.0,220/255.0,165/255.0,1]
-                    Image:
-                        source:"Imagens/image03.png"
-                        center_x:self.parent.center_x
-                        center_y:self.parent.center_y
-                    Label:
-                        color: "black"
-                        text: "Salvar"
-                        font_size:self.parent.width * 0.1
-                        center_x:self.parent.center_x
-                        center_y:self.parent.center_y - 70
-                Button:
-                    background_normal:""
-                    background_color: [242/255.0,220/255.0,165/255.0,1]
                     on_release: root.switch2cartao_famacha()
                     Image:
                         source:"Imagens/image04.png"
@@ -333,6 +320,7 @@
                 pos_hint: {"center_x": 0.5}
 
 <Imagem_Em_Analise>
+    on_enter:self.enter_in_screen()
     BoxLayout:
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
         orientation: "vertical"
@@ -349,7 +337,7 @@
     Label:
         pos_hint:{"center_x":0.5,"center_y":0.75}
         size_hint:(0.6, 0.2)
-        text: "[b]Imagem em Analise[b]"
+        text: "[b]Pasta em Analise[b]"
         color: "white"
         font_size: self.parent.width * 0.04
         markup: True
@@ -517,23 +505,12 @@
     BrownRoundedButton:
         on_press: root.parent.current = "Analise"
         size_hint:(0.2, 0.1)
-        pos_hint:{"center_x":0.3,"center_y":0.07}
+        pos_hint:{"center_x":0.5,"center_y":0.07}
         background_normal: ""
         Label:
             font_size: self.parent.width * 0.13
             color: "black"
             text: "Voltar"
-            center_x: self.parent.center_x
-            center_y: self.parent.center_y
-    GreenRoundedButton:
-        on_press: root.parent.current = "Analise"
-        size_hint:(0.2, 0.1)
-        pos_hint:{"center_x":0.7,"center_y":0.07}
-        background_normal: ""
-        Label:
-            font_size: self.parent.width * 0.13
-            color: "black"
-            text: "Salvar"
             center_x: self.parent.center_x
             center_y: self.parent.center_y
 

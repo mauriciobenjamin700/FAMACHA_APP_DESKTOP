@@ -186,12 +186,14 @@ class Segmentacao:
         """
         extensoes = ['*.jpg', '*.jpeg', '*.png']
         fnames = []
+        
 
         for i in extensoes:
             fnames += glob(join(dir_images, i))
             
         print(fnames)
 
+        rotulos = []
         imagens = []
 
         for file in fnames:
@@ -200,8 +202,9 @@ class Segmentacao:
             # Corrigindo a condição para verificar se 'image' não é None
             if image is not None:
                 imagens += [image]
+                rotulos += [basename(file)]
 
-        return imagens
+        return imagens,rotulos
             
 
 if __name__ == "__main__":

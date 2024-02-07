@@ -97,9 +97,9 @@ class Classificacao:
 
 
             if (self.predict(image)) == True:
-                lista_dados.append([id,"SAUDÁVEL"])
+                lista_dados.append([name_images[id],"SAUDÁVEL"])
             else:
-                lista_dados.append([id,"DOENTE"])
+                lista_dados.append([name_images[id],"DOENTE"])
                 
         df = DataFrame(data=lista_dados,columns=colunas)
 

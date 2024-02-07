@@ -16,11 +16,12 @@ from kivy.animation import Animation
 import os
 import threading
 from pathlib import Path
-
+from time import sleep
 from src import Classificacao, Segmentacao
 
 process_type = 1
 process_image = ''
+save_mode = ""
 
 classificador = Classificacao(Path("src/models/RF.pkl").resolve())
 segmentador = Segmentacao(Path("src/models/YOLO.pt").resolve())
@@ -31,12 +32,13 @@ def inicia_analise(file_path):
     resultado = segmentador.segment_img(file_path)
     if type(resultado) != type(None):
         doente = 0
-        if segmentador.predict(resultado):
+        if classificador.predict(resultado):
             doente = 1
     return doente
 
 def processa_pasta(file_path,mode):
-    resultado = segmentador.export(file_path,mode)
+    pasta,rotulos = segmentador.segment_dir_image(file_path)
+    resultado = classificador.export(pasta,rotulos,mode)
     return resultado
 
 class Index(Widget):    
@@ -63,6 +65,12 @@ class Index(Widget):
     
     def switch2diagnostico_falho(self):
         self.ids.manager.current = "Diagnostico_Falho"
+
+    def switch2salvar(self):
+        self.ids.manager.current = "Salvar"
+    
+    def switch2diagnostico_pasta_bom(self):
+        self.ids.manager.current = "Diagnostico_Pasta_Bom"
 
 # Telas secundarias
 class Analise(Screen):
@@ -111,15 +119,8 @@ class Confirmar_Analise(Screen):
     def analisar(self):
         global process_type
         print("Analise Iniciada\n")
-        
         if process_type == 1:
-            resultado = processa_pasta(process_image)
-            if resultado == 1:
-                print("Deu certo!")
-            elif resultado == 0:
-                myapp.index_instance.switch2diagnostico_falho()
-            else:
-                print(f"Deu ruim! {resultado}")
+            myapp.index_instance.switch2salvar()
         else:
             resultado = inicia_analise(process_image)
             print(resultado)
@@ -131,12 +132,39 @@ class Confirmar_Analise(Screen):
                 myapp.index_instance.switch2diagnostico_falho()
         
 class Imagem_Em_Analise(Screen):
-    def start_rotation_animation(self):
-        # Criação da animação para girar a imagem continuamente
-        anim = Animation(angle=360, duration=2)  # 360 graus em 2 segundos
-        anim += Animation(angle=0)  # Volta à posição inicial
-        anim.repeat = True  # Repete a animação continuamente
-        anim.start(self.ids.rotating_image)  # Inicia a animação no objeto de imagem
+    def enter_in_screen(self):
+        global save_mode
+        if save_mode == 'excel':
+            self.save_excel()
+        elif save_mode == 'csv':
+            self.save_csv()
+        elif save_mode == 'json':
+            self.save_json()
+
+    def save_excel(self):
+        resultado = processa_pasta(process_image,"excel")
+        if resultado == 1:
+            myapp.index_instance.switch2diagnostico_pasta_bom()
+        elif resultado == 0:
+            myapp.index_instance.switch2diagnostico_falho()
+        else:
+            print(f"Deu ruim! {resultado}")
+    def save_csv(self):
+        resultado = processa_pasta(process_image,"csv")
+        if resultado == 1:
+            myapp.index_instance.switch2diagnostico_pasta_bom()
+        elif resultado == 0:
+            myapp.index_instance.switch2diagnostico_falho()
+        else:
+            print(f"Deu ruim! {resultado}")
+    def save_json(self):
+        resultado = processa_pasta(process_image,"json")
+        if resultado == 1:
+            myapp.index_instance.switch2diagnostico_pasta_bom()
+        elif resultado == 0:
+            myapp.index_instance.switch2diagnostico_falho()
+        else:
+            print(f"Deu ruim! {resultado}")
 
 class Diagnostico_Ruim(Screen):
     pass
@@ -151,7 +179,19 @@ class Diagnostico_Pasta_Bom(Screen):
     pass
 
 class Salvar(Screen):
-    pass
+    def save_excel(self):
+        global save_mode
+        save_mode = 'excel'
+        myapp.index_instance.switch2imagem_em_analise()
+    def save_csv(self):
+        global save_mode
+        save_mode = 'csv'
+        myapp.index_instance.switch2imagem_em_analise()
+    def save_json(self):
+        global save_mode
+        save_mode = 'json'
+        myapp.index_instance.switch2imagem_em_analise()
+
 # Funções auxiliares 
 class CustomFileChooser(FileChooserListView):
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
