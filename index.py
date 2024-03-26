@@ -30,7 +30,7 @@ segmentador = Segmentacao(Path("src/models/YOLO.pt").resolve())
 def inicia_analise(file_path):
     doente = -1
     resultado = segmentador.segment_img(file_path)
-    if type(resultado) != type(None):
+    if resultado is not None:
         doente = 0
         if classificador.predict(resultado):
             doente = 1
