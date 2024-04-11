@@ -14,32 +14,34 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.animation import Animation
 import os
-import threading
-from pathlib import Path
-from time import sleep
-from src import Classificacao, Segmentacao
+
+from src import *
 
 process_type = 1
 process_image = ''
 save_mode = ""
 
-classificador = Classificacao(Path("src/models/RF.pkl").resolve())
-segmentador = Segmentacao(Path("src/models/YOLO.pt").resolve())
+yolo =  SegModel(seg_model)
+
+rf = PKL_Model(pre_model)
+
 
 
 def inicia_analise(file_path):
+    image = Image(file_path)
     doente = -1
-    resultado = segmentador.segment_img(file_path)
+    new_image = resize(image,(512,512))
+    resultado = Segment(new_image,yolo)
+    
     if resultado is not None:
-        doente = 0
-        if classificador.predict(resultado):
-            doente = 1
+        doente = PKL_classify(rf,Image2DF(resultado))
     return doente
 
 def processa_pasta(file_path,mode):
-    pasta,rotulos = segmentador.segment_dir_image(file_path)
-    resultado = classificador.export(pasta,rotulos,mode)
-    return resultado
+    #pasta,rotulos = segmentador.segment_dir_image(file_path)
+    #resultado = classificador.export(pasta,rotulos,mode)
+    #return resultado
+    pass
 
 class Index(Widget):    
     def stop_app(self):
@@ -103,9 +105,8 @@ class Analise(Screen):
             myapp.app_switch2confirmar_analise()
         else:
             extensao = file_path.split('.')[-1]
-            print(extensao)
-            if extensao == 'jpg':
-                 
+            valid = ["jpg","jpeg","png", "JPG","JPEG","PNG  "]
+            if extensao in valid:
                 process_image = file_path
                 myapp.app_switch2confirmar_analise()
             
