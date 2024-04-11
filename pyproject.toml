@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "famacha-app-desktop"
+version = "0.1.0"
+description = ""
+authors = ["Mauricio Benjamin da Rocha <mauriciobenjamin700@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Kivy = {extras = ["full"], version = "^2.3.0"}
+numpy = "^1.26.4"
+pandas = "^2.2.2"
+ultralytics = "^8.1.46"
+scikit-learn = "^1.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
