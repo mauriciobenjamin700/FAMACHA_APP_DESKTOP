@@ -13,7 +13,8 @@ from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.animation import Animation
-import os
+
+from os.path import join, expanduser
 
 from src import *
 
@@ -32,7 +33,7 @@ def inicia_analise(file_path):
     doente = -1
     new_image = resize(image,(512,512))
     resultado = Segment(new_image,yolo)
-    
+    print("linha 36", resultado)
     if resultado is not None:
         doente = PKL_classify(rf,Image2DF(resultado))
     return doente
@@ -80,7 +81,7 @@ class Analise(Screen):
         global process_type
         process_type = 0
         self.popup_title = title
-        self.initial_path = os.path.join(os.path.expanduser('~'),'Pictures')
+        self.initial_path = join(expanduser('~'),'Pictures')
         file_chooser_popup = FileChooserPopup(callback=self.file_selected,title=self.popup_title,initial_path=self.initial_path,dirselect=dirselect)
         file_chooser_popup.open()
 
@@ -88,7 +89,7 @@ class Analise(Screen):
         global process_type
         process_type = 1
         self.popup_title = title
-        self.initial_path = os.path.join(os.path.expanduser('~'),'Pictures')
+        self.initial_path = join(expanduser('~'),'Pictures')
         file_chooser_popup = FileChooserPopup(callback=self.file_selected,title=self.popup_title,initial_path=self.initial_path,dirselect=dirselect)
         file_chooser_popup.open()
 
@@ -99,13 +100,14 @@ class Analise(Screen):
         print("Arquivo selecionado na função principal:", file_path)
         global process_image
         global process_type
-        print(process_type)
+        print("linha 103",process_type)
         if process_type == 1:
             process_image = file_path
             myapp.app_switch2confirmar_analise()
         else:
             extensao = file_path.split('.')[-1]
-            valid = ["jpg","jpeg","png", "JPG","JPEG","PNG  "]
+            print("linha 109", extensao)
+            valid = ["jpg","jpeg","png", "JPG","JPEG","PNG"]
             if extensao in valid:
                 process_image = file_path
                 myapp.app_switch2confirmar_analise()

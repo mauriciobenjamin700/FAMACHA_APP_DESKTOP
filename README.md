@@ -8,15 +8,19 @@ Clone o repositório usando:
     git clone https://github.com/mauriciobenjamin700/FAMACHA_APP_DESKTOP.git
 ```
 
+Fortemente recomendo usar Poetry para configurar o ambiente [Guia](https://github.com/mauriciobenjamin700/Poetry-Learning)
+
 Crie um ambiente virtual para executar a aplicação no seu Windows (Ainda não existe uma versão multplataforma)
 ```bash
-    git python -m venv venv  
+    git poetry install
 ```
-Para instalar todas as dependencias necessárias para a aplicação, use:
+
+Abra o terminal do poetry com
 ```bash
-    pip install -r requirements.txt  
+poetry shell
 ```
+
 Agora basta executar o arquivo index.py para rodar a sua aplicação
 ```bash
-    git python index.py
+    python index.py
 ```
