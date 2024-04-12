@@ -19,7 +19,7 @@ from os.path import join, expanduser
 from src import *
 
 process_type = 1
-process_image = ''
+path = ''
 save_mode = ""
 
 yolo =  SegModel(seg_model)
@@ -29,19 +29,46 @@ rf = PKL_Model(pre_model)
 
 
 def inicia_analise(file_path):
+    global yolo
+    global rf
     image = Image(file_path)
     doente = -1
     new_image = resize(image,(512,512))
     resultado = Segment(new_image,yolo)
     if resultado is not None:
-        doente = PKL_classify(rf,Image2DF([resultado]))
+        doente = PKL_classify(rf,Images2DF([resultado]))
     return doente
 
 def processa_pasta(file_path,mode):
-    #pasta,rotulos = segmentador.segment_dir_image(file_path)
-    #resultado = classificador.export(pasta,rotulos,mode)
-    #return resultado
-    pass
+    dataset = Folder(file_path)
+    
+    results = 0
+    
+    if dataset is not None:
+        images = dataset[0]
+        labels = dataset[1]
+        
+        if len(images) > 0: #caso tenhamos imagens para trabalhar
+            
+            global yolo
+            global rf
+            
+            images = SegmentedList(images,yolo)
+            
+            df = Images2DF(images)
+            
+            predicts = PKL_classify(rf,df)
+            
+            # Criar um dicionário de dados onde as chaves são os nomes das colunas e os valores são os dados
+            #data = {name: value for name, value in zip(labels, predicts)}
+            data = list(zip(labels, predicts))
+            print("Linha 64 -> ", data)
+            # Criar o DataFrame a partir do dicionário de dados
+            ending = DataFrame(data=data, columns=["Imagem","Status"])  # Supondo que você queira apenas uma linha no DataFrame
+            print("Linha 67 ->", ending)
+            if(save_results(ending,mode)):
+                results = 1
+    return results
 
 class Index(Widget):    
     def stop_app(self):
@@ -96,16 +123,16 @@ class Analise(Screen):
         """
         retorna -1,0,1
         """
-        global process_image
+        global path
         global process_type
         if process_type == 1:
-            process_image = file_path
+            path = file_path
             myapp.app_switch2confirmar_analise()
         else:
             extensao = file_path.split('.')[-1]
             valid = ["jpg","jpeg","png", "JPG","JPEG","PNG"]
             if extensao in valid:
-                process_image = file_path
+                path = file_path
                 myapp.app_switch2confirmar_analise()
             
         
@@ -120,7 +147,7 @@ class Confirmar_Analise(Screen):
         if process_type == 1:
             myapp.index_instance.switch2salvar()
         else:
-            resultado = inicia_analise(process_image)[0]
+            resultado = inicia_analise(path)[0]
             print(resultado)
             if resultado == 1:
                 myapp.index_instance.switch2diagnostico_ruim()
@@ -140,7 +167,7 @@ class Imagem_Em_Analise(Screen):
             self.save_json()
 
     def save_excel(self):
-        resultado = processa_pasta(process_image,"excel")
+        resultado = processa_pasta(path,"excel")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:
@@ -148,7 +175,7 @@ class Imagem_Em_Analise(Screen):
         else:
             print(f"Deu ruim! {resultado}")
     def save_csv(self):
-        resultado = processa_pasta(process_image,"csv")
+        resultado = processa_pasta(path,"csv")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:
@@ -156,7 +183,7 @@ class Imagem_Em_Analise(Screen):
         else:
             print(f"Deu ruim! {resultado}")
     def save_json(self):
-        resultado = processa_pasta(process_image,"json")
+        resultado = processa_pasta(path,"json")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:
@@ -218,9 +245,6 @@ class FamachApp(App):
         self.title = "FAMACHAPP"
         self.icon = "../Imagens/logo.png"
         Window.maximize()
-        #self.classific = Classificacao('src\\model_classific\\RF_Model.pkl')
-        #self.segment = Segmentacao('src\\model_segment\\weights\\best.pt')
-        #Famacha('src\\model_classific\\RF_Model.pkl','src\\model_segment\\weights\\best.pt')
         self.index_instance = Index()
         return self.index_instance
     

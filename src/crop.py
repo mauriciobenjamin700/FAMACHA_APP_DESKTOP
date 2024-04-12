@@ -1,10 +1,8 @@
-from cv2 import resize,fillPoly,bitwise_and, imwrite, cvtColor, COLOR_RGB2BGR
-from typing import Tuple,List
+from cv2 import bitwise_and,fillPoly, resize
+from typing import List, Tuple
 from ultralytics import YOLO
+from numpy import array, int32, ndarray, uint8,zeros
 
-from numpy import ndarray, zeros, int32, uint8, array
-from typing import Union
-from os.path import join
 
 def SegModel(filePath:str = r"models\best.pt") -> YOLO | None:
     """
@@ -18,7 +16,6 @@ def SegModel(filePath:str = r"models\best.pt") -> YOLO | None:
         Model:: Yolo | None: Retorna o modelo carrega ou None em caso de falha
         
     """
-    
     try:
         model = YOLO(filePath)
     except:
@@ -26,7 +23,7 @@ def SegModel(filePath:str = r"models\best.pt") -> YOLO | None:
         
     return model
 
-def ResizeList(images:List[ndarray], size:Tuple[int,int] = (640,640))-> List[ndarray]: #(512,512), (256,256), (128,128), (64,64)
+def ResizeList(images:List[ndarray], size:Tuple[int,int] = (512,512))-> List[ndarray]: #(512,512), (256,256), (128,128), (64,64)
     """
     Redimensiona uma lista de imagens para a proporção desejada
     
@@ -37,7 +34,6 @@ def ResizeList(images:List[ndarray], size:Tuple[int,int] = (640,640))-> List[nda
     Return:
         resized::List[ndarray]: Lista contendo as imagens redimensionadas
     """
-    
     resized = []
     
     for imagem in images:
@@ -73,7 +69,7 @@ def Predict_image(image,modelsPath:str="best.pt",conf:float=0.5):
             dic['confidences'] = boxes.conf
             #dic['masks'] = (result.masks.xy,result.masks.data)
             dic['masks'] = result.masks.xy
-            print("MASCARAS->",dic['masks'])
+
             
         except:
             dic = None
@@ -140,28 +136,9 @@ def SegmentedList(images:List[ndarray], model:YOLO, is_resized: bool = False, ne
     segmented = []
     
     for image in images:
-        segmented.append(Segment(image,model,conf))
+        segmented.append(Segment(image,model))
         
     return segmented
 
 
-def saveSeg(image: ndarray,output:str,fname:str,rgb: bool = True):
-    """
-    Salva uma imagem segmentada na diretorio passado
-    """
-    
-    if rgb:
-        image = cvtColor(image,COLOR_RGB2BGR)
-    
-    return imwrite(join(output,fname),image)   
 
-
-if __name__ == "__main__":
-    from cv2 import imread, imwrite
-    
-    image = imread(r"Dados\dados\img3_1.jpg")
-    model = YOLO(r"models\best.pt")
-
-    result = Segment(image,model)
-    
-    saveSeg(result,"test","segmentou.jpg")

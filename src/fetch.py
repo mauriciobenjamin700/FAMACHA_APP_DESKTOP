@@ -37,10 +37,13 @@ def Folder(foldername:str="images")->Tuple[List[ndarray],List[str]]:
     Return:
         dataset::Tuple[List[ndarray],List[str]]: Lista de imagens e rotulos validas lida ou lista vazia caso não consiga ler
     """
-    images = []
-    labels = []
+    dataset = None
     
     if exists(foldername):
+        
+        images = []
+        labels = []
+        
         extensions = ['*.jpg', '*.jpeg', '*.png', '*.bmp', '*.tiff', '*.tif']
         
         files = []
@@ -52,9 +55,9 @@ def Folder(foldername:str="images")->Tuple[List[ndarray],List[str]]:
         for file in files:
             images.append(Image(file))
             labels.append(basename(file))
+            
+        dataset = (images,labels)
+        
+    return dataset
 
-    return (images,labels)
 
-
-if __name__ == "__main__":
-    print(Folder(r"Dados\dados")[1][300])
