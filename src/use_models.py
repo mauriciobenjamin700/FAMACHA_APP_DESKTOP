@@ -4,20 +4,21 @@ from numpy import argmax
 
 def PKL_Model(name_model: str ='Modelo.pkl'):
     """
-    Carregar o modelo RandomForestClassifer salvo em um arquivo pkl e o retorna.
-    
-    Args:
-        model_name::str: Nome do arquivo que será gerado
-        
-    Return:
-        model::RF: Modelo RandomForestClassifer já treinado.
-    """ 
+    Carregar o modelo do sklearn salvo em um arquivo .pkl apartir do seu caminho passado, e o retorna, pronto para ser usado em uma variável.
+    """
     # 
     with open(name_model, 'rb') as arquivo:
         model = load(arquivo)
     return model
 
-def PKL_classify(modelo, df:DataFrame)->list:
+def PKL_classify(modelo: object, df:DataFrame)->list:
+    """
+    Usa um modelo sklearn passado no parâmetro para realizar a predição do grau Famacha em um conjunto de dados em formato DataFrame pandas
+    
+    Retorna:
+        - Lista vazia em caso do dataFrame estar vazio
+        - Lista, onde cada elemento corresponde a predição da situação FAMACHA (0,1) para cada registro no DataFrame
+    """
     predicts = []
     
     for _, row in df.iterrows():

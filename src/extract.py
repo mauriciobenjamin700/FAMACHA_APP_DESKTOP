@@ -4,23 +4,18 @@ from pandas import DataFrame
 
 def Images2DF(images:List[ndarray])->DataFrame:
     """
-    Extrai as caracteristica de uma lista de imagens contendo uma ou mais imagens 
-    e arquiva os resultados em um DataFrame Pandas
-
-    Args:
-        images::List[ndarray]: Lista de imagens que serão processadas
-
-    Returns:
-        df::DataFrame: DataFrame pandas contendo os resultados da extração.
+    Processa uma lista de imagens RGB para um DataFrame pandas com suas respectivas caracteristicas extraidas ['Mean_R','Mean_G','Mean_B','Median_R','Median_G','Median_B','Std_R','Std_G','Std_B']
+    
+    Retorna:
+        - DataFrame Pandas com as caracteristicas de cada imagem passada
     """
-    #print("linha 16, images:\n",images)
     lista_dados = []
 
     colunas = ['Mean_R','Mean_G','Mean_B','Median_R','Median_G','Median_B','Std_R','Std_G','Std_B']
 
 
     for image_RGB in images:
-        #print("linha 23, image_rgb:\n", image_RGB.shape)
+
         # canais de cor com valor zero serão ignorados, pois a segmentação garante que a zona de interesse não tenha valor 0
         
         # Calculando a médianos canais de cor 

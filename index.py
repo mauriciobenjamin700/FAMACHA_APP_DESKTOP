@@ -28,18 +28,25 @@ rf = PKL_Model(pre_model)
 
 
 
-def inicia_analise(file_path):
+def analyze_image(file_path:str)->int:
+    """
+    Recebe o caminho para uma e retorna a situação FAMACHA da imagem \n
+    Possíveis Retornos:
+        - -1 (Caso não seja uma imagem válida)
+        - 0 (Caso o animal esteja saudável)
+        - 1 (Caso o animal esteja precisando de vermifugação)
+    """
     global yolo
     global rf
     image = Image(file_path)
-    doente = -1
+    famacha = -1
     new_image = resize(image,(512,512))
     resultado = Segment(new_image,yolo)
     if resultado is not None:
-        doente = PKL_classify(rf,Images2DF([resultado]))
-    return doente
+        famacha = PKL_classify(rf,Images2DF([resultado]))
+    return famacha
 
-def processa_pasta(file_path,mode):
+def analyze_folder(file_path,mode):
     dataset = Folder(file_path)
     
     results = 0
@@ -147,7 +154,7 @@ class Confirmar_Analise(Screen):
         if process_type == 1:
             myapp.index_instance.switch2salvar()
         else:
-            resultado = inicia_analise(path)[0]
+            resultado = analyze_image(path)[0]
             print(resultado)
             if resultado == 1:
                 myapp.index_instance.switch2diagnostico_ruim()
@@ -167,7 +174,7 @@ class Imagem_Em_Analise(Screen):
             self.save_json()
 
     def save_excel(self):
-        resultado = processa_pasta(path,"excel")
+        resultado = analyze_folder(path,"excel")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:
@@ -175,7 +182,7 @@ class Imagem_Em_Analise(Screen):
         else:
             print(f"Deu ruim! {resultado}")
     def save_csv(self):
-        resultado = processa_pasta(path,"csv")
+        resultado = analyze_folder(path,"csv")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:
@@ -183,7 +190,7 @@ class Imagem_Em_Analise(Screen):
         else:
             print(f"Deu ruim! {resultado}")
     def save_json(self):
-        resultado = processa_pasta(path,"json")
+        resultado = analyze_folder(path,"json")
         if resultado == 1:
             myapp.index_instance.switch2diagnostico_pasta_bom()
         elif resultado == 0:

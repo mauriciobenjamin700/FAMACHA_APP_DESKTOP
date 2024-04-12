@@ -5,15 +5,11 @@ from os.path import exists,join,basename
 from glob import glob
 
 
-def Image(filename:str="image.jpg")->ndarray:
+def Image(filename:str="image.jpg")->ndarray | None:
     """
-    Retorna uma imagem RGB em formato ndarray com base no item passado
-    
-    Args:
-        filename::str: Caminho para a imagem que será carregada
-        
-    Return:
-        file::ndarray: Imagem RGB carregada
+    Recebe o caminho para uma imagem e retorna:
+    - Uma imagem em formato ndarray formatada para RGB com base no item passado, em caso de sucesso
+    - None, em caso de falha ao carregar a imagem
     """
     
     file = imread(filename)
@@ -26,16 +22,12 @@ def Image(filename:str="image.jpg")->ndarray:
     return file
 
 
-def Folder(foldername:str="images")->Tuple[List[ndarray],List[str]]:
+def Folder(foldername:str="images")->Tuple[List[ndarray],List[str]] | None:
     """
-    Retorna uma lista de imagens ou uma lista vazia com base na pasta passada
-    Caso consiga formar uma lista de imagens, retorna o rotulo de cada imagem 
-    
-    Args:
-        foldername::str: Caminho para a pasta que será acessada
-        
-    Return:
-        dataset::Tuple[List[ndarray],List[str]]: Lista de imagens e rotulos validas lida ou lista vazia caso não consiga ler
+    Recebe o caminho para uma pasta contendo imagens e retorna:
+    - Uma tupla, onde o primeiro elemento é uma lista com todas as imagens carregadas como matrizes numpy em formato RGB, e o segundo elemento são os nomes de cada imagem.
+    - None, caso não exista a pasta selecionada.
+    - Uma tupla, contendo duas listas vazias, caso a pasta exista mas não possuí imagens.
     """
     dataset = None
     
@@ -59,5 +51,3 @@ def Folder(foldername:str="images")->Tuple[List[ndarray],List[str]]:
         dataset = (images,labels)
         
     return dataset
-
-

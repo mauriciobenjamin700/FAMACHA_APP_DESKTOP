@@ -52,7 +52,7 @@ def Predict_image(image,modelsPath:str="best.pt",conf:float=0.5):
             confiance::float: Grau de confiança que a rede usará para decidir as zonas de recorte,
             o valor de confiança pode varia entre 0 e 1.
             
-        Retorno:
+        Return:
             dic::dict: Dicionário Contendos os dados obtidos no processamento
         """
         
@@ -77,19 +77,12 @@ def Predict_image(image,modelsPath:str="best.pt",conf:float=0.5):
         return dic
 
 
-
-
-def Segment(image:ndarray,model: YOLO):
+def Segment(image:ndarray,model: YOLO)->ndarray | None:
     """
-    Recebe uma imagem famacha, a segmenta e retorna a zona de interesse coletada após a segmentação.
+    Recebe uma imagem RGB famacha e retorna:
+    - None, caso não seja uma imagem valida
+    - ndarray, Segmentação da zona de interesse coletada.
     
-    Args:
-        image::ndarray: Imagem que será segmentada
-        model::YOLO: Modelo YOLO treinado para realiazar a segmentação
- 
-    Return:
-        segmentacao::ndarray: Imagem segmentada a ser retornada ou Nada caso não haja oq segementar na imagem
-
     """
     try:
         results = model.predict(source=image,boxes=False,conf=0.3,max_det=1)
@@ -115,20 +108,13 @@ def Segment(image:ndarray,model: YOLO):
 
 
 
-def SegmentedList(images:List[ndarray], model:YOLO, is_resized: bool = False, new_size: Tuple[float,float] = (512,512), conf: float = 0.5)->List[ndarray]:
+def SegmentedList(images:List[ndarray], model:YOLO, is_resized: bool = False, new_size: Tuple[float,float] = (512,512))->List[ndarray]:
     """
     Recebe uma lista de imagens e realizada a segmentação em cada uma das imagens.
-    Caso a imagem seja uma imagem válida, retorna a zona de interesse obtida pela segmentação.
-    Caso não seja, retorna um valor Nulo para aquela imagem
+    A função pode realizar o redimensionamento da imagem caso a mesma não esteja no padrão adequado (512,512)
+    - Caso a imagem seja uma imagem válida, retorna a zona de interesse obtida pela segmentação.
+    - Caso não seja, retorna um valor Nulo para aquela imagem
     
-    Args:
-        images::List[ndarray]: Lista de imagens a serem segmentadas
-        model::YOLO: Modelo YOLO treinado para realizar a segmentação
-        is_resized::bool: Caso as imagens já estejam redimensionadas para a proporção ideal passe True
-        
-    Return:
-        segmented::List[ndarray | None]: Lista com as imagens ou None caso a imagem não tenha a zona de interesse
-         
     """
     if is_resized == False:
         images = ResizeList(images,size=new_size)
