@@ -33,9 +33,8 @@ def inicia_analise(file_path):
     doente = -1
     new_image = resize(image,(512,512))
     resultado = Segment(new_image,yolo)
-    print("linha 36", resultado)
     if resultado is not None:
-        doente = PKL_classify(rf,Image2DF(resultado))
+        doente = PKL_classify(rf,Image2DF([resultado]))
     return doente
 
 def processa_pasta(file_path,mode):
@@ -97,16 +96,13 @@ class Analise(Screen):
         """
         retorna -1,0,1
         """
-        print("Arquivo selecionado na função principal:", file_path)
         global process_image
         global process_type
-        print("linha 103",process_type)
         if process_type == 1:
             process_image = file_path
             myapp.app_switch2confirmar_analise()
         else:
             extensao = file_path.split('.')[-1]
-            print("linha 109", extensao)
             valid = ["jpg","jpeg","png", "JPG","JPEG","PNG"]
             if extensao in valid:
                 process_image = file_path
@@ -121,11 +117,10 @@ class Cartao_Famacha(Screen):
 class Confirmar_Analise(Screen):
     def analisar(self):
         global process_type
-        print("Analise Iniciada\n")
         if process_type == 1:
             myapp.index_instance.switch2salvar()
         else:
-            resultado = inicia_analise(process_image)
+            resultado = inicia_analise(process_image)[0]
             print(resultado)
             if resultado == 1:
                 myapp.index_instance.switch2diagnostico_ruim()
