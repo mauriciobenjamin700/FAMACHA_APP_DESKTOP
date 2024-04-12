@@ -5,14 +5,14 @@ Repositório destinado para manter a aplicação desktop do aplicativo Famacha, 
 
 Clone o repositório usando:    
 ```bash
-    git clone https://github.com/mauriciobenjamin700/FAMACHA_APP_DESKTOP.git
+git clone https://github.com/mauriciobenjamin700/FAMACHA_APP_DESKTOP.git
 ```
 
-Fortemente recomendo usar Poetry para configurar o ambiente [Guia](https://github.com/mauriciobenjamin700/Poetry-Learning)
+Fortemente recomendo usar Poetry para configurar o ambiente [Guia](https://python-poetry.org/)
 
 Crie um ambiente virtual para executar a aplicação no seu Windows (Ainda não existe uma versão multplataforma)
 ```bash
-    git poetry install
+git poetry install
 ```
 
 Abra o terminal do poetry com
@@ -22,5 +22,5 @@ poetry shell
 
 Agora basta executar o arquivo index.py para rodar a sua aplicação
 ```bash
-    python index.py
+python index.py
 ```
